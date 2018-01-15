@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      th:include="page/layout :: page">
+    <head>
+        <title>Introduction</title>
+        <sub-title>What is the Project for?</sub-title>
+    </head>
+    <body th:fragment="content">
+    	<p>This project is intended to demonstrate how a web-service could be created and the software stack it is made up of.</p>
+    	<p>This project is a web service with an <a href="api.html"><strong>API</strong></a>.<br/>
+    	The <a href="api.html"><strong>API</strong></a> is very simple and it only has a small data set to keep it understandable.<br/>
+    	However it does not persist the data any where and it is envisaged that this service generates its own data.
+    	</p>
+    	<p>The service does not draw data from any where it simply generates the data from a random data set.</p>
+    	<p>At the start there will be 50 names in the store and they will be regenerated the next time the service starts.</p>
+    	<p>Full details of the <a href="api.html"><strong>API provided by this application</strong></a> can be seen via an embedded <a href="http://swagger.io/" target="_blank">Swagger</a> page.</p>
+
+    	
+    	
+    </body>
+</html>

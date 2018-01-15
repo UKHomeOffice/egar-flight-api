@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>egar-flight-api</artifactId>
+	<packaging>jar</packaging>
+
+	<name>Egar Flight API</name>
+	<description>Flight details backend</description>
+
+	<parent>
+		<groupId>uk.gov.digital.ho.egar</groupId>
+		<artifactId>egar-parent</artifactId>
+		<version>2.0.3</version>
+		<relativePath />
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<aws.repo.bucket>egar-maven-s3-repo</aws.repo.bucket>
+	</properties>
+
+	<dependencies>
+	<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.2</version>
+		</dependency>
+		<dependency>
+			<groupId>uk.gov.digital.ho.egar</groupId>
+			<artifactId>egar-common</artifactId>
+			<version>4.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-eureka</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+		<!-- + + TESTING + -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- END TESTING -->
+
+		<!-- SWAGGER -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger1</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-annotations</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.webjars</groupId>
+			<artifactId>swagger-ui</artifactId>
+		</dependency>
+		<!-- SWAGGER:END -->
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.flywaydb/flyway-core -->
+		<dependency>
+			<groupId>org.flywaydb</groupId>
+			<artifactId>flyway-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+		</dependency>
+	</dependencies>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.springframework.build</groupId>
+				<artifactId>aws-maven</artifactId>
+				<version>5.0.0.RELEASE</version>
+			</extension>
+		</extensions>
+	</build>
+
+	<!-- Using S3 as Maven repository See: https://blog.zestmoney.in/using-s3-as-maven-repository-4b96e8045ccf 
+		The repository needs to be defined absolutely as no variables are resolved 
+		until the parent POM is found. The general issue seems to be, that you cannot 
+		fetch the parent of a project via S3, because Maven tries to load the parent 
+		before it loads the S3 plugin or the variables.. See: https://github.com/spring-projects/aws-maven/issues/25 
+		Permissions Required for Website Access on S3 See: https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteAccessPermissionsReqd.html -->
+	<repositories>
+		<repository>
+			<id>egar-aws-release</id>
+			<url>http://egar-maven-s3-repo.s3-website-us-east-1.amazonaws.com/release</url>
+		</repository>
+		<repository>
+			<id>egar-aws-snapshot</id>
+			<url>http://egar-maven-s3-repo.s3-website-us-east-1.amazonaws.com/snapshot</url>
+		</repository>
+	</repositories>
+
+
+	<distributionManagement>
+		<repository>
+			<id>egar-aws-release</id>
+			<name>AWS Release Repository</name>
+			<url>s3://egar-maven-s3-repo/release</url>
+		</repository>
+		<snapshotRepository>
+			<id>egar-aws-snapshot</id>
+			<name>AWS Snapshot Repository</name>
+			<url>s3://egar-maven-s3-repo/snapshot</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+
+	<version>2.0.4-CI-SNAPSHOT</version>
+</project>
