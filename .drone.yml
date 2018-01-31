@@ -1,11 +1,9 @@
 pipeline:
   build_docker_image:
     image: docker:stable-dind
-    privileged: true
+    privileged: false
     when:
       branch: [master, develop]
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     commands:
       - ./docker-build.sh egar-flight-api
   notify_slack:
