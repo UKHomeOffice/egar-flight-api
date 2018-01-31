@@ -27,7 +27,7 @@
     "eslint": "^3.14.0",
     "eslint-config-homeoffice": "^2.1.0"
   },
-  "name": "egar-public-ui",
+  "name": "egar-flight-api",
   "version": "2.0.4",
   "main": "index.js",
   "keywords": [],
