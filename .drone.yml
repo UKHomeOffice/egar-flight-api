@@ -1,7 +1,7 @@
 pipeline:
   build_docker_image:
     image: docker:stable-dind
-    privileged: true
+    privileged: false
     when:
       branch: [master, develop]
     volumes:
@@ -16,7 +16,7 @@ pipeline:
       status: [success, failure]
   deploy_docker_image:
     image: docker:stable-dind
-    privileged: true
+    privileged: false
     when:
       branch: [master, develop]
     volumes:
