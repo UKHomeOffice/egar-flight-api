@@ -19,14 +19,4 @@ pipeline:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - ./docker-deploy.sh egar-flight-api
-  image_to_quay_latest:
-    image: docker:17.09.0-ce
-    secrets:
-      - docker_password
-    privileged: false
-    when:
-      branch: [master, develop]
-    environment:
-      - DOCKER_HOST=tcp://172.17.0.1:2375
-    command:
       - ./docker-deploy-latest.sh egar-flight-api
