@@ -1,11 +1,11 @@
 pipeline:
   build_docker_image:
-    image: docker:stable-dind
+    image: docker:17.09.0-ce
     privileged: false
     when:
       branch: [master, develop]
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - ./docker-build.sh egar-flight-api
   notify_slack:
@@ -14,12 +14,12 @@ pipeline:
     channel: builds
     when:
       status: [success, failure]
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
   deploy_docker_image:
-    image: docker:stable-dind
+    image: docker:17.09.0-ce
     privileged: false
     when:
       branch: [master, develop]
+      environment:
+        - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - ./docker-deploy.sh egar-flight-api
