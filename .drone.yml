@@ -8,7 +8,7 @@ pipeline:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - ./docker-build.sh egar-flight-api
-  tagged_image_to_quay:
+  image_to_quay:
     image: docker:17.09.0-ce
     secrets:
       - docker_password
@@ -19,7 +19,7 @@ pipeline:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - ./docker-deploy.sh egar-flight-api
-  image_to_quay:
+  image_to_quay_latest:
     image: docker:17.09.0-ce
     secrets:
       - docker_password
