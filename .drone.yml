@@ -17,7 +17,5 @@ pipeline:
     privileged: false
     when:
       branch: [master, develop]
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     commands:
       - ./docker-deploy.sh egar-flight-api
