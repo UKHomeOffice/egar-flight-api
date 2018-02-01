@@ -24,4 +24,4 @@ pipeline:
     webhook: https://hooks.slack.com/services/${SLACK_WEBHOOK}
     channel: builds
     when:
-      status: [success, failure}
+      status: [success, failure]
