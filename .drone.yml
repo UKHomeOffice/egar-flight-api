@@ -19,3 +19,9 @@ pipeline:
       - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - ./docker-deploy.sh egar-flight-api
+  notify_slack:
+    images: plugins/slack
+    webhook: https://hooks.slack.com/services/${SLACK_WEBHOOK}
+    channel: builds
+    when:
+      status: [success, failure}
