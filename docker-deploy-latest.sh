@@ -1,5 +1,5 @@
 #!/bin/sh
-# Push Docker image to Quay.io.
+# Push Docker image to Quay.io..
 NAME="${1}"
 version=$(./utils/get-site-version.sh)
 
