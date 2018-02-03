@@ -1,0 +1,6 @@
+{
+  "type": "helicopter",
+  "registration": "abc123",
+  "base":"EGLL",
+  "taxesPaid": true
+}

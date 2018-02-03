@@ -1,0 +1,7 @@
+{
+  "type": "helicopter",
+  "registration": "abc123",
+  "base":"EGLL",
+  "taxesPaid": true,
+  "aircraft_uuid": "5485c34b-81f9-412b-9f52-c8d3b101183d"
+}

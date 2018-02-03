@@ -1,0 +1,6 @@
+{
+  "type": "chopper",
+  "registration": "ABC123",
+  "base":"EGLL",
+  "taxesPaid": false
+}
