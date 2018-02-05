@@ -1,6 +1,6 @@
 pipeline:
   build_docker_image:
-    image: docker:stable-dind
+    image: docker:17.09.0-ce
     privileged: false
     when:
       branch: [master, develop]
