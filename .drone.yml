@@ -4,6 +4,8 @@ pipeline:
     privileged: false
     when:
       branch: [master, develop]
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     commands:
       - ./build-deploy.sh 
   image_to_quay:
