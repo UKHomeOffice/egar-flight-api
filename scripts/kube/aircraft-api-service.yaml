@@ -13,3 +13,4 @@ spec:
     io.kompose.service: aircraft-api
 status:
   loadBalancer: {}
+
