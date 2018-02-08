@@ -37,11 +37,11 @@ spec:
         image: pipe.egarteam.co.uk/egar-aircraft-api:$AIRCRAFT_API_VER
         name: aircraft-api
         livenessProbe:
-          initialDelaySeconds: 15
+          initialDelaySeconds: 90
           periodSeconds: 20
           httpGet:
-            path: /health
-            port: 8082
+            path: /healthz
+            port: 8080
         resources: {}
       restartPolicy: Always
 status: {}
