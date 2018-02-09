@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>egar-aircraft-api</artifactId>
+	<artifactId>egar-flight-api</artifactId>
 	<packaging>jar</packaging>
 
 	<name>eGAR Aircraft API</name>
