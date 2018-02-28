@@ -42,6 +42,7 @@ import uk.gov.digital.ho.egar.aircraft.model.Aircraft;
 import uk.gov.digital.ho.egar.aircraft.model.AircraftWithUuid;
 import uk.gov.digital.ho.egar.aircraft.services.AircraftService;
 import uk.gov.digital.ho.egar.aircraft.utils.UriAircraftUtilities;
+import uk.gov.digital.ho.egar.shared.auth.api.token.AuthValues;
 
 @RestController
 @RequestMapping(PathConstants.ROOT_PATH)
@@ -195,6 +196,36 @@ public class AircraftController implements AircraftRestApi {
 
         return new ResponseEntity<Void>(responseHeaders, HttpStatus.SEE_OTHER);
     }
+//---------------------------------------------------------------------------------------------------------
+    
+    /**
+     * A get endpoint that bulk retrieves a list of GARs
+     * -------------------------------------------------------------------------------------------
+     * @throws GarDataserviceException 
+     */
+    
+    
+    @Override
+    @ApiOperation(value = "Bulk retrieve a list of Aircrafts.",
+            notes = "Retrieve a list of aircrafts for existing General Aviation Reports for a user")
+    @ApiResponses(value = {
+    		@ApiResponse(
+                    code = 200,
+                    message = "Successfully retrieved.",
+                    response =  AircraftWithUuid[].class),
+            @ApiResponse(
+                    code = 401,
+                    message = "The operation was unauthorized")})
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping(path = PathConstants.PATH_BULK,
+    			consumes = MediaType.APPLICATION_JSON_VALUE,
+           		produces = MediaType.APPLICATION_JSON_VALUE)
+    public AircraftWithUuid[] bulkRetrieveAircrafts(@RequestHeader(AuthValues.USERID_HEADER) UUID uuidOfUser, 
+    									   @RequestBody List<UUID> aircraftUuids) {
+    	
+    	return aircraftServices.getBulkAircrafts(uuidOfUser,aircraftUuids);
+    }
+    
     
     public static class ApiErrors {
 

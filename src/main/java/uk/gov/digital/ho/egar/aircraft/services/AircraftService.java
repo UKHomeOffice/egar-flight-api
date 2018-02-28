@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.egar.aircraft.services;
 
+import java.util.List;
 import java.util.UUID;
 
 import uk.gov.digital.ho.egar.aircraft.api.exceptions.AircraftApiException;
@@ -39,4 +40,12 @@ public interface AircraftService {
      * @throws AircraftApiException  Is thrown when the operation can not be carried out.
      */
 	AircraftWithUuid updateAircraftRecord(final Aircraft aircraft, final UUID aircraftUuid, final UUID userUuid) throws AircraftApiException;
+
+	/**
+	 * Retrieves List of aircraft details for user
+	 * @param uuidOfUser
+	 * @param aircraftUuids
+	 * @return list of aircraft details
+	 */
+	AircraftWithUuid[] getBulkAircrafts(final UUID uuidOfUser, final List<UUID> aircraftUuids);
 }

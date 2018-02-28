@@ -36,6 +36,12 @@ spec:
                 key: dbpass
         image: pipe.egarteam.co.uk/egar-aircraft-api:$AIRCRAFT_API_VER
         name: aircraft-api
+        livenessProbe:
+          initialDelaySeconds: 90
+          periodSeconds: 30
+          httpGet:
+            path: /healthz
+            port: 8080
         resources: {}
       restartPolicy: Always
 status: {}

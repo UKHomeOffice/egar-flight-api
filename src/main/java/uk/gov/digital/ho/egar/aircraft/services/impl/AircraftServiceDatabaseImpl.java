@@ -13,6 +13,8 @@ import uk.gov.digital.ho.egar.aircraft.services.repository.AircraftPersistentRec
 import uk.gov.digital.ho.egar.aircraft.services.repository.model.AircraftPersistentRecord;
 
 import javax.validation.ConstraintViolationException;
+
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -97,5 +99,15 @@ public class AircraftServiceDatabaseImpl implements AircraftService {
 			// Failed
 			throw new ConstraintViolationAircraftApiException(ex);
 		}
+	}
+
+	@Override
+	public AircraftWithUuid[] getBulkAircrafts(UUID uuidOfUser, List<UUID> aircraftUuids) {
+		
+		List<AircraftPersistentRecord> aircraftsList = repository.findAllByUserUuidAndAircraftUuidIn(uuidOfUser,aircraftUuids);
+		AircraftWithUuid[] aircraftsArray = new AircraftWithUuid[aircraftsList.size()];
+		aircraftsArray = aircraftsList.toArray(aircraftsArray);
+		
+		return aircraftsArray;
 	}
 }

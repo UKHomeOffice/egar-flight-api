@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>egar-flight-api</artifactId>
+	<artifactId>egar-aircraft-api</artifactId>
 	<packaging>jar</packaging>
 
 	<name>eGAR Aircraft API</name>
@@ -201,7 +201,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<repository>${project.artifactId}</repository>
+					<repository>egar/${project.artifactId}</repository>
 					<buildArgs>
 						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
 					</buildArgs>
@@ -209,6 +209,13 @@
 			</plugin>
 			<!-- Docker build : end -->
 		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.springframework.build</groupId>
+				<artifactId>aws-maven</artifactId>
+				<version>5.0.0.RELEASE</version>
+			</extension>
+		</extensions>
 	</build>
 
 	<pluginRepositories>
@@ -221,6 +228,37 @@
 		</pluginRepository>
 	</pluginRepositories>
 
+	<!-- Using S3 as Maven repository See: https://blog.zestmoney.in/using-s3-as-maven-repository-4b96e8045ccf 
+		The repository needs to be defined absolutely as no variables are resolved 
+		until the parent POM is found. The general issue seems to be, that you cannot 
+		fetch the parent of a project via S3, because Maven tries to load the parent 
+		before it loads the S3 plugin or the variables.. See: https://github.com/spring-projects/aws-maven/issues/25 
+		Permissions Required for Website Access on S3 See: https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteAccessPermissionsReqd.html -->
+	<repositories>
+		<repository>
+			<id>egar-aws-release</id>
+			<url>http://egar-maven-s3-repo.s3-website-us-east-1.amazonaws.com/release</url>
+		</repository>
+		<repository>
+			<id>egar-aws-snapshot</id>
+			<url>http://egar-maven-s3-repo.s3-website-us-east-1.amazonaws.com/snapshot</url>
+		</repository>
+	</repositories>
 
-	<version>4.0.4</version>
+
+	<distributionManagement>
+		<repository>
+			<id>egar-aws-release</id>
+			<name>AWS Release Repository</name>
+			<url>s3://egar-maven-s3-repo/release</url>
+		</repository>
+		<snapshotRepository>
+			<id>egar-aws-snapshot</id>
+			<name>AWS Snapshot Repository</name>
+			<url>s3://egar-maven-s3-repo/snapshot</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+
+	<version>4.0.2</version>
 </project>

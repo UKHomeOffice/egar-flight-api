@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import uk.gov.digital.ho.egar.aircraft.api.exceptions.AircraftApiException;
 import uk.gov.digital.ho.egar.aircraft.api.exceptions.AircraftNotFoundAircraftApiException;
 import uk.gov.digital.ho.egar.aircraft.model.Aircraft;
@@ -19,15 +22,21 @@ import uk.gov.digital.ho.egar.aircraft.services.repository.model.AircraftPersist
 import uk.gov.digital.ho.egar.aircraft.test.utils.FileReaderUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.digital.ho.egar.aircraft.test.utils.matcher.RegexMatcher.matchesRegex;
@@ -56,6 +65,9 @@ public class EndpointTests {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+	private ObjectMapper mapper;
+    
     @Test
     public void contextLoads() {
         assertThat(app).isNotNull();
@@ -335,6 +347,106 @@ public class EndpointTests {
         assertEquals(persisted.getTaxesPaid(), false);
         assertEquals(persisted.getType(), "chopper");
     }
+    
+    @Test
+	public void shouldOnlyBulkfetchAircraftsInListAndForThisUser() throws Exception{
+		// WITH
+		repo.deleteAll();
+		UUID userUuid = UUID.randomUUID();
+
+		List<UUID> aircraftUuids = new ArrayList<>();
+
+		// add three aircrafts for the current user and save ids to list
+		for (int i=0; i<3 ; i++) {
+			UUID aircraftUuid = UUID.randomUUID();
+			AircraftPersistentRecord record = AircraftPersistentRecord.builder()
+					.userUuid(userUuid)
+					.aircraftUuid(aircraftUuid)
+					.build();
+			repo.saveAndFlush(record);
+			aircraftUuids.add(aircraftUuid);
+		}
+		// add aircraft for user but dont add to list
+		UUID aircraftUuid = UUID.randomUUID();
+		AircraftPersistentRecord record = AircraftPersistentRecord.builder()
+				.userUuid(userUuid)
+				.aircraftUuid(aircraftUuid)
+				.build();
+		repo.saveAndFlush(record);
+		// add aircraft for different user
+		UUID aircraftUuidOther = UUID.randomUUID();
+		UUID UuidDiffUser = UUID.randomUUID();
+		AircraftPersistentRecord recordOther = AircraftPersistentRecord.builder()
+				.userUuid(UuidDiffUser)
+				.aircraftUuid(aircraftUuidOther)
+				.build();
+		repo.saveAndFlush(recordOther);
+		aircraftUuids.add(aircraftUuidOther);
+		// WHEN
+		MvcResult result =
+				this.mockMvc
+				.perform(post("/api/v1/aircraft/Summaries").header(USER_HEADER_NAME, userUuid)
+						.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+						.content(mapper.writeValueAsString(aircraftUuids)))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+				//THEN
+				.andExpect(jsonPath("$").exists())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$", hasSize(3)))
+				.andExpect(jsonPath("$[*].aircraft_uuid", hasItems(aircraftUuids.get(0).toString(),aircraftUuids.get(1).toString(),aircraftUuids.get(2).toString()))).andReturn();
+		//Check it doesn't contain other gars
+		String response = result.getResponse().getContentAsString();
+		assertFalse(response.contains(aircraftUuid.toString()));
+		assertFalse(response.contains(aircraftUuids.get(3).toString()));
+    }
+    @Test
+	public void bulkFetchShouldReturnEmptyArrayIfNoMatch() throws Exception{
+		// WITH
+		repo.deleteAll();
+		UUID userUuid       = UUID.randomUUID();
+		List<UUID> aircraftUuids = new ArrayList<>();
+		for (int i=0; i<3 ; i++) {
+			aircraftUuids.add(UUID.randomUUID());
+		}
+		// WHEN
+		this.mockMvc
+		.perform(post("/api/v1/aircraft/Summaries").header(USER_HEADER_NAME, userUuid)
+				.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+				.content(mapper.writeValueAsString(aircraftUuids)))
+		// THEN
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$").exists())
+		.andExpect(jsonPath("$").isArray())
+		.andExpect(jsonPath("$", hasSize(0)));
+	}
+    @Test
+	public void bulkFetchShouldNotContainDuplicateData() throws Exception{
+		// WITH
+		repo.deleteAll();
+		UUID userUuid = UUID.randomUUID();
+		UUID aircraftUuid  = UUID.randomUUID();
+		
+		// add gar for user
+		AircraftPersistentRecord record = AircraftPersistentRecord.builder()
+				.userUuid(userUuid)
+				.aircraftUuid(aircraftUuid)
+				.build();
+		repo.saveAndFlush(record);
+		List<UUID> aircraftUuids = new ArrayList<>();
+		// add same gar uuid to request list
+		aircraftUuids.add(aircraftUuid);
+		aircraftUuids.add(aircraftUuid);
+		// WHEN
+		this.mockMvc
+		.perform(post("/api/v1/aircraft/Summaries").header(USER_HEADER_NAME, userUuid)
+				.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+				.content(mapper.writeValueAsString(aircraftUuids)))
+		.andExpect(status().isOk())
+		.andExpect(jsonPath("$").exists())
+		.andExpect(jsonPath("$").isArray())
+		.andExpect(jsonPath("$", hasSize(1)));
+	}
 
     private UUID getAircraftUuid(MvcResult response) {
 
@@ -345,4 +457,6 @@ public class EndpointTests {
         String stringId = delimitedPath[delimitedPath.length - 1];
         return UUID.fromString(stringId);
     }
+    
+    
 }

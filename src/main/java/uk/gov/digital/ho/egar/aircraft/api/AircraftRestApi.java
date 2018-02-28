@@ -7,6 +7,7 @@ import uk.gov.digital.ho.egar.aircraft.api.exceptions.AircraftApiException;
 import uk.gov.digital.ho.egar.aircraft.model.Aircraft;
 import uk.gov.digital.ho.egar.aircraft.model.AircraftWithUuid;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -48,4 +49,13 @@ public interface AircraftRestApi {
              final UUID aircraftUuid,
              final Aircraft aircraft,
              final Errors errors) throws AircraftApiException;
+
+    /**
+     * Retrieves a list of aircraft retails
+     * @param uuidOfUser
+     * @param aircraftUuids list of aircraft uuids
+     * @return a list of aircraft details
+     */
+	AircraftWithUuid[] bulkRetrieveAircrafts(final UUID uuidOfUser, 
+											 final List<UUID> aircraftUuids);
 }

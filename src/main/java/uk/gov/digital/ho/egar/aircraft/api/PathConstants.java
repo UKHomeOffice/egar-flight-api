@@ -19,4 +19,6 @@ public interface PathConstants {
 
 	public static final String PATH_ADD_AIRCRAFT = "/";
 	public static final String PATH_AIRCRAFT_ID = "/{"+AIRCRAFT_PATH_VARIABLE+"}";
+	public static final String PATH_BULK = "/Summaries";
+	
 }
